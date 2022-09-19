@@ -1,0 +1,17 @@
+
+/*
+  This method will split a given string at a given delimiter and map the resulting substrings and return said map.
+*/
+
+private HashMap simpleMakeToMap(String stringToMap, String delimiter){
+    HashMap result = new HashMap();
+    String[] stringToArray = stringToMap.split(delimiter);
+    stringToArray.eachWithIndex { String string, Integer index ->
+
+        if (index%2 == 0){
+
+            result.put(string, stringToArray[index+1])
+        }
+    }
+    return result;
+}
