@@ -1,0 +1,127 @@
+
+/*
+  This method can be implemented in your groovy/java scripts.
+  Simply provide a request authorisation, url, method, headers, body and a Boolean to determine if the code should log encounters during execution additionally.
+  
+  Here's an example of a request headers map to be used with this method:
+  
+  LinkedHashMap<String, String> requestHeadersMap = [
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  ]
+  
+  Additionally, you can use this method to encode your credentials for authorisation to Base64:
+  
+  import java.util.Base64.Encoder;
+
+  public String encodeToBase64(String stringToEncode) {
+      return Base64.getEncoder().encodeToString(stringToEncode.getBytes())
+  }
+*/
+
+import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Level;
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.log4j.Logger;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import groovy.json.JsonSlurper;
+ 
+private LinkedHashMap<String, Object> executeWebRequest (String requestAuthorization, String requestUrl, String requestMethod, LinkedHashMap<String, String> requestHeadersMap, LinkedHashMap<String, Object> requestBodyMap, Boolean doLog) {
+   
+    Logger logger = Logger.getLogger("de.louis.scriptrunner.console.methods.executeWebRequest");
+    logger.setLevel(Level.DEBUG);
+    CloseableHttpClient clientObject = HttpClientBuilder.create().build();
+    CloseableHttpResponse responseObject;
+    HttpUriRequest getRequestObject;
+    HttpUriRequest postRequestObject;
+    HttpUriRequest putRequestObject;
+    LinkedHashMap<String, Object> result = new LinkedHashMap();
+    try {
+        if (requestMethod.equalsIgnoreCase("GET")) {
+   
+            getRequestObject = new HttpGet(requestUrl);
+            if (requestAuthorization) {
+                   
+                getRequestObject.setHeader("Authorization", requestAuthorization);
+            }
+            if (requestHeadersMap) {
+                   
+                requestHeadersMap.keySet().each { String requestHeaderKey ->
+   
+                    getRequestObject.setHeader(requestHeaderKey, requestHeadersMap.get(requestHeaderKey));
+                };
+            };
+        } else if (requestMethod.equalsIgnoreCase("POST")) {
+   
+            postRequestObject = new HttpPost(requestUrl);
+            if (requestAuthorization) {
+                   
+                postRequestObject.setHeader("Authorization", requestAuthorization);
+            }
+            if (requestHeadersMap) {
+                   
+                requestHeadersMap.keySet().each { String requestHeaderKey ->
+   
+                    postRequestObject.setHeader(requestHeaderKey, requestHeadersMap.get(requestHeaderKey));
+                };
+            };
+            if (requestBodyMap) {
+  
+                postRequestObject.setEntity(new StringEntity(requestBodyMap.toString()));
+            };
+        } else if (requestMethod.equalsIgnoreCase("PUT")) {
+                   
+            putRequestObject = new HttpPut(requestUrl);
+            if (requestAuthorization) {
+                   
+                putRequestObject.setHeader("Authorization", requestAuthorization);
+            }
+            if (requestHeadersMap) {
+                   
+                requestHeadersMap.keySet().each { String requestHeaderKey ->
+   
+                    putRequestObject.setHeader(requestHeaderKey, requestHeadersMap.get(requestHeaderKey));
+                };
+            };
+            if (requestBodyMap) {
+  
+                putRequestObject.setEntity(new StringEntity(requestBodyMap.toString()));
+            };
+        } else {
+   
+            doLog == true?:logger.error("No valid request method was provided - Method execution of 'executeWebRequest' aborted!");
+            return;
+        };
+        if (getRequestObject) {
+   
+            responseObject = clientObject.execute(getRequestObject);
+        } else if (postRequestObject) {
+   
+            responseObject = clientObject.execute(postRequestObject);
+        } else {
+   
+            responseObject = clientObject.execute(putRequestObject);
+        }
+        Integer statusCode = responseObject.getStatusLine().getStatusCode();
+        result.put("status", ["statusCode": statusCode, "statusText":  org.apache.commons.httpclient.HttpStatus.getStatusText(statusCode)]);
+        if (responseObject.getEntity()){
+ 
+            result.put("body", new JsonSlurper().parseText(EntityUtils.toString(responseObject.getEntity())));
+        }
+    } catch (Exception e) {
+   
+        logger.error("Invoking of method 'executeWebRequest' failed with exception: ${e}.");
+        return e.printStackTrace();
+    } finally {
+       
+        return result;
+    }
+}
