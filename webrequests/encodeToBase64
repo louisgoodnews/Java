@@ -1,0 +1,10 @@
+
+/*
+  Use this method to encode a given string to base64.
+*/
+
+import java.util.Base64.Encoder;
+
+public String encodeToBase64(String stringToEncode) {
+    return Base64.getEncoder().encodeToString(stringToEncode.getBytes())
+}
