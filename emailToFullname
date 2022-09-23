@@ -1,0 +1,34 @@
+
+/*
+  This method converts a given list of string email addresses to a list of string fullnames (format: firstname + lastname)
+*/
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
+
+private List<String> emailToFullname (List<String> emailAddresses) {
+    List<String> result = [];
+    Logger logger = Logger.getLogger("de.louis.scriptrunner.methods.emailToFullname");
+    logger.setLevel(Level.DEBUG);
+    try {
+
+        emailAddresses.each { String string -> 
+
+            if (string.find("@\\S+")){
+                String domain = string.find("@\\S+");
+                String fullname = string.replace(domain, "");
+                String firstname = fullname.find("[a-zA-Z]+");
+                String lastname = fullname.replace(domain, "").replace(firstname, "").replace(".", "");
+                result.add("${firstname.capitalize()} ${lastname.capitalize()}".toString());
+            } else {
+
+                result.add(string);
+                logger.warn("Current string was ${string}!")
+            }
+        }
+    } catch (Exception e) {
+
+        logger.error("Execution of method 'emailToDisplayname' caught exception ${e}.");
+    }
+    return result;
+}
