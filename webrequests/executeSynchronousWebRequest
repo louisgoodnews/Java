@@ -34,9 +34,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import groovy.json.JsonSlurper;
  
-private LinkedHashMap<String, Object> executeWebRequest (String requestAuthorization, String requestUrl, String requestMethod, LinkedHashMap<String, String> requestHeadersMap, LinkedHashMap<String, Object> requestBodyMap, Boolean doLog) {
+private LinkedHashMap<String, Object> executeSynchronousWebRequest (String requestAuthorization, String requestUrl, String requestMethod, LinkedHashMap<String, String> requestHeadersMap, LinkedHashMap<String, Object> requestBodyMap, Boolean doLog) {
    
-    Logger logger = Logger.getLogger("de.louis.scriptrunner.console.methods.executeWebRequest");
+    Logger logger = Logger.getLogger("de.louis.scriptrunner.console.methods.executeSynchronousWebRequest");
     logger.setLevel(Level.DEBUG);
     CloseableHttpClient clientObject = HttpClientBuilder.create().build();
     CloseableHttpResponse responseObject;
@@ -97,7 +97,7 @@ private LinkedHashMap<String, Object> executeWebRequest (String requestAuthoriza
             };
         } else {
    
-            doLog == true?:logger.error("No valid request method was provided - Method execution of 'executeWebRequest' aborted!");
+            doLog == true?:logger.error("No valid request method was provided - Method execution of 'executeSynchronousWebRequest' aborted!");
             return;
         };
         if (getRequestObject) {
@@ -118,7 +118,7 @@ private LinkedHashMap<String, Object> executeWebRequest (String requestAuthoriza
         }
     } catch (Exception e) {
    
-        logger.error("Invoking of method 'executeWebRequest' failed with exception: ${e}.");
+        logger.error("Invoking of method 'executeSynchronousWebRequest' failed with exception: ${e}.");
         return e.printStackTrace();
     } finally {
        
