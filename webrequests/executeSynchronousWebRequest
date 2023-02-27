@@ -111,7 +111,7 @@ private LinkedHashMap<String, Object> executeSynchronousWebRequest (String reque
             responseObject = clientObject.execute(putRequestObject);
         }
         Integer statusCode = responseObject.getStatusLine().getStatusCode();
-        result.put("status", ["statusCode": statusCode, "statusText":  org.apache.commons.httpclient.HttpStatus.getStatusText(statusCode)]);
+        result.put("status", ["status-code": statusCode, "statusText":  org.apache.commons.httpclient.HttpStatus.getStatusText(statusCode)]);
         if (responseObject.getEntity()){
  
             result.put("body", new JsonSlurper().parseText(EntityUtils.toString(responseObject.getEntity())));
